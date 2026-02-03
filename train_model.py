@@ -14,8 +14,8 @@ from ml.model import (
 )
 # TODO: load the cencus.csv data
 
-project_path = os.getcwd()  
-data_path = "/home/jboyds8/Deploying-a-Scalable-ML-Pipeline-with-FastAPI/data/census.csv"
+project_path = os.path.dirname(os.path.abspath(__file__)) 
+data_path = os.path.join(project_path, "data", "census.csv")
 
 data = pd.read_csv(data_path, skipinitialspace=True)
 
