@@ -1,4 +1,4 @@
-import joblib
+import pickle
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from ml.data import process_data
 import pandas as pd
@@ -76,13 +76,14 @@ def save_model(model, path):
         Path to save pickle file.
     """
     # TODO: implement the function
-    joblib.dump({"model": model, "encoder": encoder, "lb": lb}, path)
+    with open(path, 'wb') as f:
+        pickle.dump(model, f)
 
 def load_model(path):
     """ Loads pickle file from `path` and returns it."""
     # TODO: implement the function
-    artifacts = joblib.load(path)
-    return artifacts["model"], artifacts["encoder"], artifacts["lb"]
+    with open(path, 'rb') as f:
+        return pickle.load(f)
 
 
 def performance_on_categorical_slice(
