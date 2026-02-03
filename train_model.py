@@ -16,9 +16,11 @@ from ml.model import (
 
 project_path = os.path.dirname(os.path.abspath(__file__)) 
 data_path = os.path.join(project_path, "data", "census.csv")
-print(f"Loading data from: {data_path}")
+if not os.path.exists(data_path):
+    raise FileNotFoundError(f"❌ Could not find: {data_path}\n"
+                            f"Check if 'data/census.csv' exists in that folder.")
 
-data = pd.read_csv(data_path)
+data = pd.read_csv(data_path, skipinitialspace=True)
 
 # TODO: split the provided data to have a train dataset and a test dataset
 # Optional enhancement, use K-fold cross validation instead of a train-test split.
