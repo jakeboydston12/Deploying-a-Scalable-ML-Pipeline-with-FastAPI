@@ -16,7 +16,7 @@ from ml.model import (
 
 project_path = os.path.dirname(os.path.abspath(__file__)) 
 data_path = os.path.join(project_path, "data", "census.csv")
-
+print(data_path)
 data = pd.read_csv(data_path, skipinitialspace=True)
 
 # TODO: split the provided data to have a train dataset and a test dataset
