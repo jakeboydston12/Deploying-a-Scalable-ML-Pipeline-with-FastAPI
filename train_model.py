@@ -51,10 +51,9 @@ X_test, y_test, _, _ = process_data(
 model = train_model(X_train, y_train)
 
 # save the model and the encoder
-model_path = os.path.join(project_path, "model", "model.pkl")
-save_model(model, model_path)
-encoder_path = os.path.join(project_path, "model", "encoder.pkl")
-save_model(encoder, encoder_path)
+save_model(model, "model/model.pkl")
+save_model(encoder, "model/encoder.pkl")
+save_model(lb, "model/lb.pkl")
 
 # load the model
 model = load_model(
@@ -65,25 +64,19 @@ model = load_model(
 preds = inference(model, X_test)
 
 # Calculate and print the metrics
-p, r, fb = compute_model_metrics(y_test, preds)
-print(f"Precision: {p:.4f} | Recall: {r:.4f} | F1: {fb:.4f}")
+precision, recall, fbeta = compute_model_metrics(y_test, preds)
+print(f"Overall Metrics - Precision: {precision:.3f}, Recall: {recall:.3f}, F1: {fbeta:.3f}")
 
 # TODO: compute the performance on model slices using the performance_on_categorical_slice function
 # iterate through the categorical features
-for col in cat_features:
-    # iterate through the unique values in one categorical feature
-    for slicevalue in sorted(test[col].unique()):
-        count = test[test[col] == slicevalue].shape[0]
-        p, r, fb = performance_on_categorical_slice(
-            data=test,
-            column_name=col,
-            slice_value=slicevalue,
-            categorical_features=cat_features,
-            label="salary", 
-            encoder=encoder,
-            lb=lb,
-            model=model
-        )
-        with open("slice_output.txt", "a") as f:
-            print(f"{col}: {slicevalue}, Count: {count:,}", file=f)
-            print(f"Precision: {p:.4f} | Recall: {r:.4f} | F1: {fb:.4f}", file=f)
+with open("slice_output.txt", "w") as f:
+    for col in cat_features:
+        f.write(f"\n--- Performance Slices for Feature: {col} ---\n")
+        for value in test[col].unique():
+            precision, recall, fbeta = performance_on_categorical_slice(
+                test, col, value, cat_features, "salary", encoder, lb, model
+            )
+            output = f"{value}: Precision {precision:.3f}, Recall {recall:.3f}, F1 {fbeta:.3f}"
+            f.write(output + "\n")
+
+print("Training complete. Model and slice performance saved.")
