@@ -1,4 +1,4 @@
-import pickle
+import joblib
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from ml.data import process_data
 import pandas as pd
@@ -76,18 +76,17 @@ def save_model(model, path):
         Path to save pickle file.
     """
     # TODO: implement the function
-    with open(path, 'wb') as f:
-        pickle.dump(model, f)
+    joblib.dump({"model": model, "encoder": encoder, "lb": lb}, path)
 
 def load_model(path):
     """ Loads pickle file from `path` and returns it."""
     # TODO: implement the function
-    with open(path, 'rb') as f:
-        return pickle.load(f)
+    artifacts = joblib.load(path)
+    return artifacts["model"], artifacts["encoder"], artifacts["lb"]
 
 
 def performance_on_categorical_slice(
-    data, column_name, model, encoder, lb, cat_features
+    data, column_name, slice_value, categorical_features, label, encoder, lb, model
 ):
     """ Computes the model metrics on a slice of the data specified by a column name and
 
@@ -123,25 +122,25 @@ def performance_on_categorical_slice(
 
     """
     # TODO: implement the function
-    rows = []
-    for value in data[column_name].unique():
-        df_temp = data[data[column_name] == value]
-        
-        
-        X_temp, y_temp, _, _ = process_data(
-            df_temp, categorical_features=cat_features, 
-            label="salary", training=False, encoder=encoder, lb=lb
-        )
-        
-        preds = inference(model, X_temp)
-        precision, recall, fbeta = compute_model_metrics(y_temp, preds)
-        
-        output = f"Slice: {value} | Precision: {precision:.3f} | Recall: {recall:.3f} | F1: {fbeta:.3f}"
-        print(output)
-        rows.append(output)
+    # Filter the dataframe to create the slice
+    slice_df = data[data[column_name] == slice_value]
 
-    with open("slice_output.txt", "a") as f:
-        f.write(f"--- Performance on Slice: {column_name} ---\n")
-        for row in rows:
-            f.write(row + "\n")
+    # Process the slice data using the imported process_data function
+    # Note: training=False ensures we use the existing encoder and lb
+    X_slice, y_slice, _, _ = process_data(
+        slice_df, 
+        categorical_features=categorical_features, 
+        label=label, 
+        training=False, 
+        encoder=encoder, 
+        lb=lb
+    )
+
+    # Get predictions using the inference function defined earlier
+    preds = inference(model, X_slice)
+
+    # Compute metrics using the compute_model_metrics function
+    precision, recall, fbeta = compute_model_metrics(y_slice, preds)
+
+    return precision, recall, fbeta
     
