@@ -1,28 +1,60 @@
 import pytest
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from ml.model import train_model, inference, compute_model_metrics
 # TODO: add necessary import
 
-# TODO: implement the first test. Change the function name and input as needed
-def test_one():
+@pytest.fixture
+def data():
+    """ Simple fixture to provide dummy data for testing. """
+    X = np.array([[1, 2], [3, 4], [5, 6], [7, 8]])
+    y = np.array([0, 1, 0, 1])
+    return X, y
+
+def test_train_model_type(data):
     """
-    # add description for the first test
+    Test 1: Verify the training function returns the correct model type.
+    Ensures the ML model uses the expected algorithm (RandomForest).
     """
-    # Your code here
+    X, y = data
+    model = train_model(X, y)
+    assert isinstance(model, RandomForestClassifier)
     pass
 
 
 # TODO: implement the second test. Change the function name and input as needed
-def test_two():
+def test_inference_output_shape(data):
     """
-    # add description for the second test
+    Test 2: Verify the inference function returns the expected shape and type.
+    Ensures that for N input rows, we get N predictions.
     """
-    # Your code here
+    X, y = data
+    model = train_model(X, y)
+    preds = inference(model, X)
+    
+    assert isinstance(preds, np.ndarray), "Inference should return a numpy array"
+    assert len(preds) == len(X), "Number of predictions must match number of input rows"
+    assert set(preds).issubset({0, 1}), "Predictions should be binary (0 or 1)"
     pass
 
 
 # TODO: implement the third test. Change the function name and input as needed
-def test_three():
+def test_compute_metrics_logic():
     """
-    # add description for the third test
+    Test 3: Verify the computing metrics function returns expected values.
+    Uses a perfect prediction scenario to check if precision/recall/F1 return 1.0.
     """
-    # Your code here
+    y_true = np.array([0, 1, 0, 1])
+    y_pred = np.array([0, 1, 0, 1])
+    
+    precision, recall, f1 = compute_model_metrics(y_true, y_pred)
+    
+    # Check if metrics are floats and within the valid range [0, 1]
+    assert isinstance(precision, float)
+    assert isinstance(recall, float)
+    assert isinstance(f1, float)
+    assert precision == 1.0, f"Expected precision 1.0, got {precision}"
+    assert recall == 1.0, f"Expected recall 1.0, got {recall}"
+    assert f1 == 1.0, f"Expected F1 1.0, got {f1}"
     pass
