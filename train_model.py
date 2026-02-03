@@ -14,7 +14,10 @@ from ml.model import (
 )
 # TODO: load the cencus.csv data
 
-data_path = os.path.join(os.path.dirname(__file__), "../data/census.csv")
+project_path = os.getcwd() 
+data_path = os.path.join(project_path, "data", "census.csv")
+print(f"Loading data from: {data_path}")
+
 data = pd.read_csv(data_path)
 
 # TODO: split the provided data to have a train dataset and a test dataset
@@ -65,19 +68,28 @@ model = load_model(
 preds = inference(model, X_test)
 
 # Calculate and print the metrics
-precision, recall, fbeta = compute_model_metrics(y_test, preds)
-print(f"Overall Metrics - Precision: {precision:.3f}, Recall: {recall:.3f}, F1: {fbeta:.3f}")
+p, r, fb = compute_model_metrics(y_test, preds)
+print(f"Precision: {p:.4f} | Recall: {r:.4f} | F1: {fb:.4f}")
 
 # TODO: compute the performance on model slices using the performance_on_categorical_slice function
 # iterate through the categorical features
 with open("slice_output.txt", "w") as f:
-    for col in cat_features:
-        f.write(f"\n--- Performance Slices for Feature: {col} ---\n")
-        for value in test[col].unique():
-            precision, recall, fbeta = performance_on_categorical_slice(
-                test, col, value, cat_features, "salary", encoder, lb, model
-            )
-            output = f"{value}: Precision {precision:.3f}, Recall {recall:.3f}, F1 {fbeta:.3f}"
-            f.write(output + "\n")
+    f.write("Model Slice Performance Metrics\n\n")
 
-print("Training complete. Model and slice performance saved.")
+for col in cat_features:
+    for slicevalue in sorted(test[col].unique()):
+        count = test[test[col] == slicevalue].shape[0]
+        # Skip very small slices if needed, otherwise compute:
+        p, r, fb = performance_on_categorical_slice(
+            data=test,
+            column_name=col,
+            slice_value=slicevalue,
+            categorical_features=cat_features,
+            label="salary",
+            encoder=encoder,
+            lb=lb,
+            model=model
+        )
+        with open("slice_output.txt", "a") as f:
+            print(f"{col}: {slicevalue}, Count: {count:,}", file=f)
+            print(f"Precision: {p:.4f} | Recall: {r:.4f} | F1: {fb:.4f}\n", file=f)
