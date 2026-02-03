@@ -14,7 +14,7 @@ from ml.model import (
 )
 # TODO: load the cencus.csv data
 
-project_path = os.getcwd() 
+project_path = os.path.dirname(os.path.abspath(__file__)) 
 data_path = os.path.join(project_path, "data", "census.csv")
 print(f"Loading data from: {data_path}")
 
