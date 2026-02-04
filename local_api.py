@@ -32,7 +32,7 @@ data = {
 
 # TODO: send a POST using the data above
 # We use the 'json' parameter to automatically set headers and encode the dict
-r = requests.post("http://127.0.0.1", json=data)
+r = requests.post("http://127.0.0.1:8000", json=data)
 
 # TODO: print the status code
 print(f"POST Status Code: {r.status_code}")

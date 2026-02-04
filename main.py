@@ -58,7 +58,7 @@ async def post_inference(data: Data):
     # The data has names with hyphens and Python does not allow those as variable names.
     # Here it uses the functionality of FastAPI/Pydantic/etc to deal with this.
     data = {k.replace("_", "-"): [v] for k, v in data_dict.items()}
-    df = pd.DataFrame.from_dict(data)
+    data = pd.DataFrame.from_dict(data)
 
     cat_features = [
         "workclass",
@@ -70,12 +70,15 @@ async def post_inference(data: Data):
         "sex",
         "native-country",
     ]
-    X, _, _, _ = process_data(
-        df,
+    data_processed, _, _, _ = process_data(
+        data,
         categorical_features=cat_features,
         label=None,
         training=False,
         encoder=encoder
     )
-    _inference = inference(model, X) # your code here to predict the result using data_processed
+    # TODO: predict the result using data_processed
+    _inference = inference(model, X)
+    
+    # Return the human-readable label using apply_label
     return {"result": apply_label(_inference)}
