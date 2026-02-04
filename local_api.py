@@ -3,13 +3,13 @@ import json
 import requests
 
 # TODO: send a GET using the URL http://127.0.0.1:8000
-r = requests.get("http://127.0.0.1:8000")
+r_get = requests.get("http://127.0.0.1:8000")
 
 # TODO: print the status code
-print(f"GET Status Code: {r.status_code}")
+print(f"GET Status Code: {r_get.status_code}")
 
 # TODO: print the welcome message
-print(f"GET Response Body: {r.json()}")
+print(f"GET Response Body: {r_get.json()}")
 
 
 
@@ -32,10 +32,10 @@ data = {
 
 # TODO: send a POST using the data above
 # We use the 'json' parameter to automatically set headers and encode the dict
-r = requests.post("http://127.0.0.1:8000", json=data)
+r_post = requests.post("http://127.0.0.1:8000/data/", json=data)
 
 # TODO: print the status code
-print(f"POST Status Code: {r.status_code}")
+print(f"POST Status Code: {r_post.status_code}")
 
 # TODO: print the result
-print(f"POST Prediction Result: {r.json()}")
+print(f"POST Prediction Result: {r_post.json()}")
