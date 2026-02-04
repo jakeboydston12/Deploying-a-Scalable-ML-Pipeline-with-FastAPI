@@ -78,7 +78,7 @@ async def post_inference(data: Data):
         encoder=encoder
     )
     # TODO: predict the result using data_processed
-    _inference = inference(model, X)
+    _inference = inference(model, data_processed)
     
     # Return the human-readable label using apply_label
     return {"result": apply_label(_inference)}
